@@ -1,3 +1,4 @@
 *.ipynb
 migrations/*
 __pycache__/*
+*.sqlite3
