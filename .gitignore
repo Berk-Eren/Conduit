@@ -1,0 +1,3 @@
+*.ipynb
+migrations/*
+__pycache__/*
