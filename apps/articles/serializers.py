@@ -1,9 +1,11 @@
 from re import A
 from rest_framework import serializers
+from yaml import serialize
 
 from .models import Article, Comment, Tag
 from .mixins import TimeFieldSerializerMixin
 from .relations import CommentStringRelatedField
+from apps.core.decorators import KeywordNestedSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -15,15 +17,28 @@ class TagSerializer(serializers.ModelSerializer):
     def validate(self, *args, **kwargs):
         return super().validate(*args, **kwargs)
 
-
+@KeywordNestedSerializer("article")
 class ArticleSerializer(TimeFieldSerializerMixin):
     comments = CommentStringRelatedField(many=True, source="main_comments", read_only=True)
-    tags = TagSerializer(many=True)
+    include_tags = serializers.ListSerializer(
+        child=serializers.CharField(), write_only=True )
+    tags = serializers.StringRelatedField(many=True, read_only=True)
     
     class Meta:
         model = Article
         # fields = ["comments", "tags", "created"]
         exclude = [ "id", "created_at", "updated_at"]
+
+    def create(self, validated_data):
+        tags = validated_data.pop("include_tags", None)
+        instance = super().create(validated_data)
+
+        if type(tags) == list:
+            for tag_title in tags:
+                tag_ins = Tag.objects.get_or_create(title=tag_title)
+                instance.tags.add(tag_ins[0].id)
+
+        return instance
 
 
 class CommentSerializer(TimeFieldSerializerMixin):
