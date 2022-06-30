@@ -1,18 +1,16 @@
 from rest_framework import serializers
 from .models import User, Profile
+from apps.core.decorators import KeywordNestedSerializer
 
 
-
+@KeywordNestedSerializer("user")
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "username", "first_name", "last_name",]
         read_only_fields = ["first_name", "last_name"]
 
-    def validate(self, *args, **kwargs):
-        return super().validate(*args, **kwargs)
-
-
+@KeywordNestedSerializer("user")
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type":"password"}, write_only=True)
 
@@ -43,7 +41,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         
         return password
 
-
+@KeywordNestedSerializer("user")
 class UserLoginSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -51,7 +49,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
         fields = ["email", "username", "first_name", "last_name"]
         read_only_fields = ["first_name", "last_name"]
 
-
+@KeywordNestedSerializer("profile", many="profiles")
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile

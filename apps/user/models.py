@@ -6,7 +6,7 @@ class User(auth_models_User):
     USERNAME_FIELD = "email"
 
     def __str__(self):
-        return self.username
+        return self.username + " : " + str(self.id)
 
 
 class Profile(models.Model):
