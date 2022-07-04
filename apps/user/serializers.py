@@ -33,7 +33,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 and ("password2" not in self.validated_data):
             raise serializers.ValidationError("You should provide 'password' alongside with 'password2'")
         
-        return super().create(validated_data)
+        #password = self.validated_data.pop("password")
+        
+        model = self.__class__.Meta.model
+        instance = model.objects.create_user(**self.validated_data)
+
+        #instance.set_password(password)
+        #instance.save()
+
+        return instance
 
     def validate_password(self, password):
         if self.initial_data["password"] != self.initial_data["password2"]:

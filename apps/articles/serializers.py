@@ -8,7 +8,7 @@ from .relations import CommentStringRelatedField
 from apps.core.decorators import KeywordNestedSerializer
 
 
-@KeywordNestedSerializer("tag", many="tags")
+#@KeywordNestedSerializer("tag", many="tags")
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -16,7 +16,7 @@ class TagSerializer(serializers.ModelSerializer):
         exclude = [ "id", ]
 
 
-@KeywordNestedSerializer("article", many="articles")
+# @KeywordNestedSerializer("article", many="articles")
 class ArticleSerializer(TimeFieldSerializerMixin):
     comments = CommentStringRelatedField(many=True, source="main_comments", read_only=True)
     include_tags = serializers.ListSerializer(
@@ -41,7 +41,7 @@ class ArticleSerializer(TimeFieldSerializerMixin):
 
         return instance
 
-@KeywordNestedSerializer("comment", many="comments")
+#@KeywordNestedSerializer("comment", many="comments")
 class CommentSerializer(TimeFieldSerializerMixin):
     class Meta:
         model = Comment

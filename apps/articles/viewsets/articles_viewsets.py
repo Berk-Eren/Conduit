@@ -10,12 +10,14 @@ from rest_framework import filters
 from ..serializers import ArticleSerializer
 from ..models import Article, Tag, Comment
 from ..filters import ArticleFilter
+from ..renderers import ArticleJSONRenderer
 
 
 class ArticleViewSet(viewsets.GenericViewSet):
     queryset = Article.objects.all()
     #filter_backends = [ArticleFilter]#[filters.SearchFilter]
     serializer_class = ArticleSerializer
+    renderer_classes = [ArticleJSONRenderer]
     
     def list(self, request):
         articles = self.filter_queryset(self.queryset)#Article.objects.all()
@@ -38,3 +40,4 @@ class ArticleUpdateDestroyView(DestroyAPIView, UpdateAPIView, RetrieveAPIView):
     serializer_class = ArticleSerializer
     queryset = Article.objects.all()
     lookup_field = "slug"
+    renderer_classes = [ArticleJSONRenderer]

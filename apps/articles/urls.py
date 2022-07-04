@@ -13,8 +13,8 @@ router.register(r'tags', TagViewSet)
 
 
 urlpatterns = [
-    path('articles/',article_list),
-    path('articles/<str:slug>/', ArticleUpdateDestroyView.as_view()),
+    path('articles/',article_list, name="article-list"),
+    path('articles/<str:slug>/', ArticleUpdateDestroyView.as_view(), name="article-destroy"),
     path('articles/<str:slug>/comments/', views.comment_on_article),
     path('articles/<str:slug>/comments/<int:instance_id>/', views.comment_on_article),
 ]

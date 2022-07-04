@@ -1,15 +1,18 @@
 from xml.etree.ElementTree import Comment
 from django.shortcuts import render
 from rest_framework.exceptions import NotFound
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Article, Comment
 from .serializers import ArticleSerializer, CommentSerializer
+
 from apps.core.shortcuts import get_object_or_404
+from .renderers import CommentJSONRenderer
 
 
 @api_view(["GET", "POST", "DELETE", "PUT"])
+@renderer_classes([CommentJSONRenderer])
 def comment_on_article(request, slug, instance_id=None):
     if request.method == "GET":
         article = Article.objects.get(slug=slug)
@@ -26,7 +29,7 @@ def comment_on_article(request, slug, instance_id=None):
         
         if serializer.is_valid():
             if is_subcomment_of:
-                instance = get_object_or_404(Comment, id=is_subcomment_of)
+                instance = get_object_or_404(Comment, article=article, id=is_subcomment_of)
                 comment_instance = serializer.save()
 
                 instance.comments.add(comment_instance)
@@ -39,7 +42,8 @@ def comment_on_article(request, slug, instance_id=None):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == "DELETE":
-        instance = get_object_or_404(Comment, id=instance_id)
+        article = Article.objects.get(slug=slug)
+        instance = get_object_or_404(Comment, article=article, id=instance_id)
         
         if instance.is_subcomment_of.filter(is_deleted=False).exists()\
                 or instance.comments.filter(is_deleted=False).exists():
@@ -53,7 +57,8 @@ def comment_on_article(request, slug, instance_id=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     elif request.method == "PUT":
-        instance = get_object_or_404(Comment, id=instance_id)
+        article = Article.objects.get(slug=slug)
+        instance = get_object_or_404(Comment, article=article, id=instance_id)
 
         if serializer.is_valid():
             instance = serializer.save()
