@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Article, Comment
-from .serializers import ArticleSerializer, CommentSerializer
+from .serializers import CommentSerializer
 
 from apps.core.shortcuts import get_object_or_404
 from .renderers import CommentJSONRenderer

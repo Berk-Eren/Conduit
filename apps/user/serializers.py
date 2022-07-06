@@ -1,17 +1,21 @@
 from rest_framework import serializers
 from .models import User, Profile
-from apps.core.decorators import KeywordNestedSerializer
+from apps.core.mixins import ReadKeywordData
 
 
-@KeywordNestedSerializer("user")
-class UserSerializer(serializers.ModelSerializer):
+
+class UserReadKeywordData(ReadKeywordData):
+    input_keyword = "user"
+
+
+class UserSerializer(UserReadKeywordData, serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "username", "first_name", "last_name",]
         read_only_fields = ["first_name", "last_name"]
 
-@KeywordNestedSerializer("user")
-class UserRegistrationSerializer(serializers.ModelSerializer):
+
+class UserRegistrationSerializer(UserReadKeywordData, serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type":"password"}, write_only=True)
 
     class Meta:
@@ -49,16 +53,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         
         return password
 
-@KeywordNestedSerializer("user")
-class UserLoginSerializer(serializers.ModelSerializer):
+
+class UserLoginSerializer(UserReadKeywordData, serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = ["email", "username", "first_name", "last_name"]
         read_only_fields = ["first_name", "last_name"]
 
-@KeywordNestedSerializer("profile", many="profiles")
-class ProfileSerializer(serializers.ModelSerializer):
+
+class ProfileSerializer(ReadKeywordData, serializers.ModelSerializer):
+    input_keyword = "profile"
     class Meta:
         model = Profile
         fields = "__all__"

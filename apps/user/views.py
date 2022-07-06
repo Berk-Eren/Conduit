@@ -9,6 +9,10 @@ from rest_framework.authtoken.models import Token
 from .models import User, Profile
 from .serializers import (UserRegistrationSerializer, UserLoginSerializer,
                             UserSerializer, ProfileSerializer)
+from .renderers import ProfileJSONRenderer
+
+
+from apps.core.renderers import ApplicationJSONRenderer
 
 
 class UserDetailUpdateView(generics.RetrieveUpdateAPIView):
@@ -58,7 +62,7 @@ class UserRegistrationView(APIView):
             serializer.save()
             
             return Response(serializer.data, status.HTTP_201_CREATED)
-        return Response(serializer.errors, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileViewFollowUnfollowView(generics.RetrieveAPIView, 
@@ -68,8 +72,9 @@ class ProfileViewFollowUnfollowView(generics.RetrieveAPIView,
     lookup_url_kwarg = 'username'
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+    renderer_classes = [ProfileJSONRenderer, ]
 
-    def get_current_user_profile(self, request):
+    def get_user_profile(self, request):
         return Profile.objects.get(user=request.user)
 
     def retrieve(self, request, username):
@@ -81,7 +86,7 @@ class ProfileViewFollowUnfollowView(generics.RetrieveAPIView,
     def create(self, request, username):
         instance = self.get_object()
         
-        current_user_profile = self.get_current_user_profile(request)
+        current_user_profile = self.get_user_profile(request)
         current_user_profile.following.add(instance)
 
         serializer = self.get_serializer(instance)
@@ -91,7 +96,7 @@ class ProfileViewFollowUnfollowView(generics.RetrieveAPIView,
     def destroy(self, request, username):
         instance = self.get_object()
         
-        current_user_profile = self.get_current_user_profile(request)
+        current_user_profile = self.get_user_profile(request)
         current_user_profile.following.remove(instance)
 
         serializer = self.get_serializer(instance)
