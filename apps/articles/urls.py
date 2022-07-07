@@ -9,11 +9,12 @@ article_list = ArticleViewSet.as_view({'get': 'list', 'post': 'create'})
 
 router = routers.SimpleRouter()
 router.register(r'tags', TagViewSet)
+router.register(r'articles', ArticleViewSet)
 
 
 
 urlpatterns = [
-    path('articles/',article_list, name="article-list"),
+    # path('articles/',article_list, name="article-list"),
     path('articles/<str:slug>/', ArticleUpdateDestroyView.as_view(), name="article-destroy"),
     path('articles/<str:slug>/comments/', views.comment_on_article),
     path('articles/<str:slug>/comments/<int:instance_id>/', views.comment_on_article),

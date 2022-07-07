@@ -15,13 +15,14 @@ from .renderers import CommentJSONRenderer
 @renderer_classes([CommentJSONRenderer])
 def comment_on_article(request, slug, instance_id=None):
     if request.method == "GET":
-        article = Article.objects.get(slug=slug)
+        article = get_object_or_404(Article, slug=slug)
         serializer = CommentSerializer(article.comment_set.all(), many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == "POST":
-        article = Article.objects.get(slug=slug)
+        article = get_object_or_404(Article, slug=slug)
+
         is_subcomment_of = request.data.get("is_subcomment_of", None)
         
         serializer = CommentSerializer(data={**request.data,
@@ -42,7 +43,7 @@ def comment_on_article(request, slug, instance_id=None):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == "DELETE":
-        article = Article.objects.get(slug=slug)
+        article = get_object_or_404(Article, slug=slug)
         instance = get_object_or_404(Comment, article=article, id=instance_id)
         
         if instance.is_subcomment_of.filter(is_deleted=False).exists()\
@@ -57,7 +58,7 @@ def comment_on_article(request, slug, instance_id=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     elif request.method == "PUT":
-        article = Article.objects.get(slug=slug)
+        article = get_object_or_404(Article, slug=slug)
         instance = get_object_or_404(Comment, article=article, id=instance_id)
 
         if serializer.is_valid():

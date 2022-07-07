@@ -2,10 +2,10 @@ from django.db import models
 
 from apps.core.models import BaseTimeModel
 from django.core.validators import MinLengthValidator
-from django.contrib.auth.models import User
 from django.utils.text import slugify
-from apps.user.models import User
 from django.core.validators import validate_slug
+
+from apps.user.models import User
 
 
 class Article(BaseTimeModel):
@@ -14,6 +14,9 @@ class Article(BaseTimeModel):
     description = models.CharField(max_length=100, null=True)
     content = models.TextField(validators=[MinLengthValidator(50)], blank=True)
     number_of_likes = models.IntegerField(default=0)
+    number_of_dislikes = models.IntegerField(default=0)
+    liked_by = models.ManyToManyField(User, related_name="liked_articles", blank=True)
+    disliked_by = models.ManyToManyField(User, related_name="disliked_articles", blank=True)
     number_of_shares = models.IntegerField(default=0)
     tags = models.ManyToManyField("Tag", blank=True)
     slug = models.SlugField(db_index=True, blank=True)
