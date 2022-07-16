@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 from datetime import timedelta
 
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_filters',
+    'drf_yasg',
 
     'apps.articles',
     'apps.core',
@@ -69,7 +72,7 @@ ROOT_URLCONF = 'conduit_realworld_example_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -153,9 +156,14 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     #'ALGORITHM': 'RS256',
     #'SIGNING_KEY': "",
     #'VERIFYING_KEY': ""
 }
+
+AUTH_USER_MODEL = "user.CustomUser"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "images")
+MEDIA_URL = '/images/'

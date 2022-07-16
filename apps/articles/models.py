@@ -5,18 +5,18 @@ from django.core.validators import MinLengthValidator
 from django.utils.text import slugify
 from django.core.validators import validate_slug
 
-from apps.user.models import User
+from apps.user.models import CustomUser
 
 
 class Article(BaseTimeModel):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=20, null=False)
     description = models.CharField(max_length=100, null=True)
     content = models.TextField(validators=[MinLengthValidator(50)], blank=True)
     number_of_likes = models.IntegerField(default=0)
     number_of_dislikes = models.IntegerField(default=0)
-    liked_by = models.ManyToManyField(User, related_name="liked_articles", blank=True)
-    disliked_by = models.ManyToManyField(User, related_name="disliked_articles", blank=True)
+    liked_by = models.ManyToManyField(CustomUser, related_name="liked_articles", blank=True)
+    disliked_by = models.ManyToManyField(CustomUser, related_name="disliked_articles", blank=True)
     number_of_shares = models.IntegerField(default=0)
     tags = models.ManyToManyField("Tag", blank=True)
     slug = models.SlugField(db_index=True, blank=True)
@@ -46,7 +46,7 @@ class Comment(BaseTimeModel):
     comments = models.ManyToManyField("self", related_name="is_subcomment_of",
                                         symmetrical=False, blank=True)
     articles = models.ForeignKey(Article, on_delete=models.CASCADE)
-    commented_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    commented_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     is_edited = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
 

@@ -3,3 +3,5 @@ migrations
 __pycache__
 *.sqlite3
 apps/jft
+images/
+templates/

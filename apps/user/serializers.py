@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Profile
+from .models import CustomUser, Profile
 from apps.core.mixins import ReadKeywordData
 
 
@@ -10,7 +10,7 @@ class UserReadKeywordData(ReadKeywordData):
 
 class UserSerializer(UserReadKeywordData, serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["email", "username", "first_name", "last_name",]
         read_only_fields = ["first_name", "last_name"]
 
@@ -19,7 +19,7 @@ class UserRegistrationSerializer(UserReadKeywordData, serializers.ModelSerialize
     password2 = serializers.CharField(style={"input_type":"password"}, write_only=True)
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["email", "username", "password", "password2"]
         extra_kwargs = {
             "password": {
@@ -42,8 +42,8 @@ class UserRegistrationSerializer(UserReadKeywordData, serializers.ModelSerialize
         model = self.__class__.Meta.model
         instance = model.objects.create_user(**self.validated_data)
 
-        #instance.set_password(password)
-        #instance.save()
+        Profile.objects.create(user=instance, 
+                                image=self.context["request"].data["image"] )
 
         return instance
 
@@ -57,7 +57,7 @@ class UserRegistrationSerializer(UserReadKeywordData, serializers.ModelSerialize
 class UserLoginSerializer(UserReadKeywordData, serializers.ModelSerializer):
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["email", "username", "first_name", "last_name"]
         read_only_fields = ["first_name", "last_name"]
 

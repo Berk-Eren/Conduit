@@ -5,8 +5,9 @@ from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.parsers import MultiPartParser, FormParser
 
-from .models import User, Profile
+from .models import CustomUser, Profile
 from .serializers import (UserRegistrationSerializer, UserLoginSerializer,
                             UserSerializer, ProfileSerializer)
 from .renderers import ProfileJSONRenderer
@@ -19,19 +20,22 @@ class UserDetailUpdateView(generics.RetrieveUpdateAPIView):
 
     #authentication_classes = [authentication.TokenAuthentication]
     #permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
+    serializer_class = UserRegistrationSerializer
 
     def list(self, request):
-        user = User.objects.get(user=request.user)
-        serialiazer = UserSerializer(user)
+        user = CustomUser.objects.get(user=request.user)
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(user)
 
-        return Response(serialiazer.data, status.HTTP_200_OK)
+        return Response(serializer.data, status.HTTP_200_OK)
 
     def update(self, request):
-        instance = User.object.filter(**request.data)
+        instance = CustomUser.object.filter(**request.data)
 
         if instance.exists():
-            serializer = UserRegistrationSerializer(instance.first(), data=request.data)
+            serializer_class = self.get_serializer_class()
+            serializer = serializer_class(instance.first(), data=request.data)
 
             if serializer.is_valid():
                 serializer.save()
@@ -44,7 +48,7 @@ class UserAuthenticationView(APIView):
     #permission_classes = [permissions.IsAdminUser]
 
     def post(self, request):
-        instance = User.objects.filter(**request.data)
+        instance = CustomUser.objects.filter(**request.data)
 
         if instance.exists():
             serializer = UserLoginSerializer(instance.first())
@@ -54,9 +58,12 @@ class UserAuthenticationView(APIView):
 
 
 class UserRegistrationView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
+        serializer = UserRegistrationSerializer(data=request.data, context={
+                                                                        "request": request
+                                                                    } )
 
         if serializer.is_valid():
             serializer.save()

@@ -17,10 +17,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 class ArticleSerializer(ReadKeywordData, TimeFieldSerializerMixin):
     comments = CommentStringRelatedField(many=True, source="main_comments", read_only=True)
-    include_tags = serializers.ListSerializer(
+    include_tags = serializers.ListField(
         child=serializers.CharField(), write_only=True )
     tags = serializers.StringRelatedField(many=True, read_only=True)
     author = serializers.StringRelatedField(read_only=True)
+    input_keyword = "article"
     
     class Meta:
         model = Article
@@ -29,7 +30,9 @@ class ArticleSerializer(ReadKeywordData, TimeFieldSerializerMixin):
         #list_serializer_class = DictionarySerializer
 
     def create(self, validated_data):
+        validated_data["author"] = self.context["author"]
         tags = validated_data.pop("include_tags", None)
+
         instance = super().create(validated_data)
 
         if type(tags) == list:

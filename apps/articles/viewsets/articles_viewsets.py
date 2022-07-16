@@ -10,17 +10,23 @@ from rest_framework import filters
 
 from ..serializers import ArticleSerializer
 from ..models import Article, Tag, Comment
-from ..filters import ArticleFilter
+from ..filters import ArticleFilter, SearchBasedOnAuthorFilter
 from ..renderers import ArticleJSONRenderer
+from ..permissions import UserIsNotAuthorOfArticlePermission
+
 from apps.core.shortcuts import get_object_or_404
 
 
 class ArticleViewSet(viewsets.GenericViewSet):
     queryset = Article.objects.all()
-    #filter_backends = [ArticleFilter]#[filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend]#[SearchBasedOnAuthorFilter]#[filters.SearchFilter]
+    filterset_class = ArticleFilter
     serializer_class = ArticleSerializer
     renderer_classes = [ArticleJSONRenderer]
+    permission_classes = [UserIsNotAuthorOfArticlePermission]
     lookup_field = "slug"
+    filterset_fields = ['author__username']
+    # search_fields = ["$author__username"]
     
     def list(self, request):
         articles = self.filter_queryset(self.queryset)#Article.objects.all()
@@ -39,7 +45,7 @@ class ArticleViewSet(viewsets.GenericViewSet):
 
     @action(detail=True, methods=["post"])
     def like(self, request, slug=None):
-        article = get_object_or_404(Article, slug=slug)
+        article = self.get_object()
 
         if not article.liked_by.filter(id=request.user.id).exists():
             if article.disliked_by.filter(id=request.user.id).exists():

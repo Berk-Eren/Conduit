@@ -1,3 +1,6 @@
 Pillow
 Django
 django-filter
+pyyaml
+uritemplate
+drf-yasg
