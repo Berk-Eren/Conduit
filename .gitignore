@@ -5,3 +5,4 @@ __pycache__
 apps/jft
 images/
 templates/
+oauth/

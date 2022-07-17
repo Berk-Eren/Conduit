@@ -60,7 +60,8 @@ urlpatterns = [
         "template_name": "swagger-ui.html",
         "extra_context": {'schema_url':'openapi-schema'}
     }), name="swagger-ui"),
-    path('documentation/swagger-ui', openapi_yasg_schema_view.with_ui("swagger"))
+    path('documentation/swagger-ui', openapi_yasg_schema_view.with_ui("swagger")),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,

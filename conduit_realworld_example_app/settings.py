@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'django_filters',
     'drf_yasg',
+    'oauth2_provider',
 
     'apps.articles',
     'apps.core',
@@ -146,9 +147,10 @@ REST_FRAMEWORK = {
         # "rest_framework.permissions.IsAuthenticated",
     #],
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.TokenAuthentication'
+        #'rest_framework_simplejwt.authentication.JWTAuthentication',
+        #'rest_framework.authentication.TokenAuthentication'
     ],
     "DEFAULT_RENDERER_CLASSES": [
         'rest_framework.renderers.JSONRenderer'
@@ -167,3 +169,15 @@ AUTH_USER_MODEL = "user.CustomUser"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "images")
 MEDIA_URL = '/images/'
+
+
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {
+        'read': 'Read scope', 
+        'write': 'Write scope', 
+        'groups': 'Access to your groups'
+    },
+    'PKCE_REQUIRED': False,
+    'ROTATE_REFRESH_TOKEN': False
+}

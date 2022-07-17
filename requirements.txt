@@ -4,3 +4,4 @@ django-filter
 pyyaml
 uritemplate
 drf-yasg
+django-oauth-toolkit
