@@ -18,7 +18,7 @@ class TagSerializer(serializers.ModelSerializer):
 class ArticleSerializer(ReadKeywordData, TimeFieldSerializerMixin):
     comments = CommentStringRelatedField(many=True, source="main_comments", read_only=True)
     include_tags = serializers.ListField(
-        child=serializers.CharField(), write_only=True )
+        child=serializers.CharField(), write_only=True, default=["default_tag"], label="Article Tags" )
     tags = serializers.StringRelatedField(many=True, read_only=True)
     author = serializers.StringRelatedField(read_only=True)
     input_keyword = "article"
@@ -27,6 +27,9 @@ class ArticleSerializer(ReadKeywordData, TimeFieldSerializerMixin):
         model = Article
         # fields = ["comments", "tags", "created"]
         exclude = [ "id", "created_at", "updated_at"]
+        read_only_fields = ["number_of_shares", "number_of_likes", 
+                             "number_of_dislikes", "liked_by", "disliked_by",
+                              "slug" ]
         #list_serializer_class = DictionarySerializer
 
     def create(self, validated_data):

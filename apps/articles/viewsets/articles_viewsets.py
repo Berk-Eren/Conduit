@@ -18,6 +18,9 @@ from apps.core.shortcuts import get_object_or_404
 
 
 class ArticleViewSet(viewsets.GenericViewSet):
+    """
+    For creating an article and getting a list of articles.
+    """
     queryset = Article.objects.all()
     filter_backends = [DjangoFilterBackend]#[SearchBasedOnAuthorFilter]#[filters.SearchFilter]
     filterset_class = ArticleFilter
@@ -29,12 +32,18 @@ class ArticleViewSet(viewsets.GenericViewSet):
     # search_fields = ["$author__username"]
     
     def list(self, request):
+        """
+        For getting a list of articles.
+        """
         articles = self.filter_queryset(self.queryset)#Article.objects.all()
         serializer = ArticleSerializer(articles, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def create(self, request):
+        """
+        For creating an article.
+        """
         serializer = ArticleSerializer(data=request.data, context={"author": request.user})
 
         if serializer.is_valid():

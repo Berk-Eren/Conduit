@@ -23,23 +23,19 @@ class UserDetailUpdateView(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserRegistrationSerializer
 
-    def list(self, request):
-        user = CustomUser.objects.get(user=request.user)
+    def retrieve(self, request):
         serializer_class = self.get_serializer_class()
-        serializer = serializer_class(user)
+        serializer = serializer_class(request.user)
 
         return Response(serializer.data, status.HTTP_200_OK)
 
     def update(self, request):
-        instance = CustomUser.object.filter(**request.data)
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(request.user, data=request.data)
 
-        if instance.exists():
-            serializer_class = self.get_serializer_class()
-            serializer = serializer_class(instance.first(), data=request.data)
-
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status.HTTP_200_OK)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_200_OK)
 
 
 class UserAuthenticationView(APIView):
