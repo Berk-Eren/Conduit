@@ -6,3 +6,5 @@ apps/jft
 images/
 templates/
 oauth/
+*.key
+*.env

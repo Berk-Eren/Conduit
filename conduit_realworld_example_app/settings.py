@@ -173,9 +173,12 @@ MEDIA_URL = '/images/'
 
 OAUTH2_PROVIDER = {
     # this is the list of available scopes
+    "OIDC_ENABLED": True,
+    "OIDC_RSA_PRIVATE_KEY": os.environ.get("OIDC_RSA_PRIVATE_KEY"),
     'SCOPES': {
-        'read': 'Read scope', 
-        'write': 'Write scope', 
+        'openid': 'OpenID Connect scope',
+        'read': 'Read scope',
+        'write': 'Write scope',
         'groups': 'Access to your groups'
     },
     'PKCE_REQUIRED': False,
